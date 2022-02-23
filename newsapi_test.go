@@ -24,17 +24,17 @@ func Test_WithHTTPClient(t *testing.T) {
 
 func Test_WithURL(t *testing.T) {
 	c := &Client{}
-	WithURL("123")(c)
+	WithBaseURL("123")(c)
 
-	assert.Equal(t, "123", c.url)
+	assert.Equal(t, "123", c.baseURL)
 }
 
 func Test_New(t *testing.T) {
 	client := &http.Client{}
-	c := New("321", WithURL("123"), WithHTTPClient(client))
+	c := New("321", WithBaseURL("123"), WithHTTPClient(client))
 
 	assert.Equal(t, "321", c.apiKey)
-	assert.Equal(t, "123", c.url)
+	assert.Equal(t, "123", c.baseURL)
 	assert.Equal(t, client, c.client)
 }
 
@@ -85,9 +85,9 @@ func Test_Client_Everything(t *testing.T) {
 				), nil
 			},
 			Err: &Error{
-				StatusCode: http.StatusBadRequest,
-				Code:       "100",
-				Message:    "bad thing",
+				HTTPCode: http.StatusBadRequest,
+				APICode:  "100",
+				Message:  "bad thing",
 			},
 		},
 		"Succesfully fetched articles": {
@@ -175,7 +175,7 @@ func Test_Client_Everything(t *testing.T) {
 				client: &http.Client{
 					Transport: transport,
 				},
-				url: "test/",
+				baseURL: "test/",
 			}
 
 			transport.RegisterResponder(http.MethodGet, "test/everything", test.Resp)
@@ -245,9 +245,9 @@ func Test_Client_TopHeadlines(t *testing.T) {
 				), nil
 			},
 			Err: &Error{
-				StatusCode: http.StatusBadRequest,
-				Code:       "100",
-				Message:    "bad thing",
+				HTTPCode: http.StatusBadRequest,
+				APICode:  "100",
+				Message:  "bad thing",
 			},
 		},
 		"Succesfully fetched articles": {
@@ -335,7 +335,7 @@ func Test_Client_TopHeadlines(t *testing.T) {
 				client: &http.Client{
 					Transport: transport,
 				},
-				url: "test/",
+				baseURL: "test/",
 			}
 
 			transport.RegisterResponder(http.MethodGet, "test/top-headlines", test.Resp)
@@ -408,9 +408,9 @@ func Test_Client_Sources(t *testing.T) {
 				), nil
 			},
 			Err: &Error{
-				StatusCode: http.StatusBadRequest,
-				Code:       "100",
-				Message:    "bad thing",
+				HTTPCode: http.StatusBadRequest,
+				APICode:  "100",
+				Message:  "bad thing",
 			},
 		},
 		"Succesfully fetched sources": {
@@ -486,7 +486,7 @@ func Test_Client_Sources(t *testing.T) {
 				client: &http.Client{
 					Transport: transport,
 				},
-				url: "test/",
+				baseURL: "test/",
 			}
 
 			transport.RegisterResponder(http.MethodGet, "test/top-headlines/sources", test.Resp)
@@ -560,8 +560,8 @@ func Test_Client_get(t *testing.T) {
 				client: &http.Client{
 					Transport: transport,
 				},
-				url:    "test/",
-				apiKey: "777",
+				baseURL: "test/",
+				apiKey:  "777",
 			}
 
 			transport.RegisterResponder(http.MethodGet, "test/123", test.Resp)

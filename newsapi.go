@@ -9,39 +9,40 @@ import (
 	"time"
 )
 
+const _defaultBaseURL = "https://newsapi.org/v2/"
+
+// Client handles request sending to newsapi.
+type Client struct {
+	apiKey  string
+	baseURL string
+	client  *http.Client
+}
+
 // ClientOption is used to set client configuration options.
 type ClientOption func(c *Client)
 
-// WithHTTPClient allows to set custom http client when newsapi client is
-// making requests.
+// WithHTTPClient sets custom http client.
 func WithHTTPClient(hc *http.Client) ClientOption {
 	return func(c *Client) {
 		c.client = hc
 	}
 }
 
-// WithURL allows to set custom url that http calls are made to.
-func WithURL(url string) ClientOption {
+// WithBaseURL sets custom base url.
+func WithBaseURL(url string) ClientOption {
 	return func(c *Client) {
-		c.url = url
+		c.baseURL = url
 	}
 }
 
-// Client implements newsapi endpoints and allows to fetch articles and sources.
-type Client struct {
-	apiKey string
-	url    string
-	client *http.Client
-}
-
-// New creates fresh instance of newsapi client.
+// New creates a fresh instance of newsapi client.
 func New(apiKey string, opts ...ClientOption) *Client {
 	c := &Client{
 		apiKey: apiKey,
 		client: &http.Client{
 			Timeout: time.Second * 10,
 		},
-		url: "https://newsapi.org/v2/",
+		baseURL: _defaultBaseURL,
 	}
 
 	for _, opt := range opts {
@@ -51,29 +52,30 @@ func New(apiKey string, opts ...ClientOption) *Client {
 	return c
 }
 
-// Everything retrieves articles based on provided parameters.
-// Endpoint documentation can be found here: https://newsapi.org/docs/endpoints/everything
+// Everything retrieves articles by the provided parameters.
+// The uint return value indicates the number of available articles. The
+// length of the returned slice may be less than this value; additional calls
+// need to be make to retrieve other available articles.
+// Endpoint documentation can be found here:
+// https://newsapi.org/docs/endpoints/everything
 func (c *Client) Everything(ctx context.Context, pr EverythingParams) ([]Article, uint, error) {
-	return c.getArticles(
-		ctx,
-		"everything",
-		&pr,
-	)
+	return c.getArticles(ctx, "everything", &pr)
 }
 
-// TopHeadlines retrieves top headlines articles based on provided parameters.
-// Endpoint documentation can be found here: https://newsapi.org/docs/endpoints/top-headlines
+// TopHeadlines retrieves top headlines articles by the provided parameters.
+// The uint return value indicates the number of available articles. The
+// length of the returned slice may be less than this value; additional calls
+// need to be make to retrieve other available articles.
+// Endpoint documentation can be found here:
+// https://newsapi.org/docs/endpoints/top-headlines
 func (c *Client) TopHeadlines(ctx context.Context, pr TopHeadlinesParams) ([]Article, uint, error) {
-	return c.getArticles(
-		ctx,
-		"top-headlines",
-		&pr,
-	)
+	return c.getArticles(ctx, "top-headlines", &pr)
 }
 
 // Sources retrieves available sources for top headlines and everything
-// parameters.
-// Endpoint documentation can be found here: https://newsapi.org/docs/endpoints/sources
+// endpoints by the provided parameters.
+// Endpoint documentation can be found here:
+// https://newsapi.org/docs/endpoints/sources
 func (c *Client) Sources(ctx context.Context, pr SourceParams) ([]Source, error) {
 	statusCode, body, err := c.get(
 		ctx,
@@ -98,24 +100,23 @@ func (c *Client) Sources(ctx context.Context, pr SourceParams) ([]Source, error)
 
 	if data.Status != "ok" {
 		return nil, &Error{
-			StatusCode: statusCode,
-			Code:       data.Code,
-			Message:    data.Message,
+			HTTPCode: statusCode,
+			APICode:  data.Code,
+			Message:  data.Message,
 		}
 	}
 
 	return data.Sources, nil
 }
 
-func (c *Client) getArticles(
-	ctx context.Context,
-	path string,
-	pr params,
-) ([]Article, uint, error) {
-
+// getArticles retrieves articles by the provided path and parameters.
+// The uint return value indicates the number of available articles. The
+// length of the returned slice may be less than this value; additional calls
+// need to be make to retrieve other available articles.
+func (c *Client) getArticles(ctx context.Context, endpoint string, pr params) ([]Article, uint, error) {
 	statusCode, body, err := c.get(
 		ctx,
-		path,
+		endpoint,
 		pr,
 	)
 	if err != nil {
@@ -137,29 +138,25 @@ func (c *Client) getArticles(
 
 	if data.Status != "ok" {
 		return nil, 0, &Error{
-			StatusCode: statusCode,
-			Code:       data.Code,
-			Message:    data.Message,
+			HTTPCode: statusCode,
+			APICode:  data.Code,
+			Message:  data.Message,
 		}
 	}
 
 	return data.Articles, data.TotalResults, nil
 }
 
-func (c *Client) get(
-	ctx context.Context,
-	path string,
-	pr params,
-) (int, io.ReadCloser, error) {
-
-	if err := pr.Validate(); err != nil {
+// get sends a GET request to the provided endpoint.
+func (c *Client) get(ctx context.Context, endpoint string, pr params) (int, io.ReadCloser, error) {
+	if err := pr.validate(); err != nil {
 		return 0, nil, err
 	}
 
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
-		fmt.Sprintf("%s%s?%s", c.url, path, pr.rawQuery()),
+		fmt.Sprintf("%s%s?%s", c.baseURL, endpoint, pr.rawQuery()),
 		http.NoBody,
 	)
 	if err != nil {
@@ -176,7 +173,11 @@ func (c *Client) get(
 	return resp.StatusCode, resp.Body, nil
 }
 
+// params is an interface is used to process query parameters.
 type params interface {
-	Validate() error
+	// validate should validate the params.
+	validate() error
+
+	// rawQuery should build a raw query from the params.
 	rawQuery() string
 }

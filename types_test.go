@@ -7,7 +7,138 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_SourceParams_Validate(t *testing.T) {
+func Test_SortBy_isValid(t *testing.T) {
+	for _, sortBy := range []SortBy{
+		SortByRelevancy,
+		SortByPopularity,
+		SortByPublishedAt,
+	} {
+		assert.True(t, sortBy.isValid())
+	}
+
+	sortBy := SortBy("test")
+	assert.False(t, sortBy.isValid())
+}
+
+func Test_SearchIn_isValid(t *testing.T) {
+	for _, searchIn := range []SearchIn{
+		SearchInTitle,
+		SearchInDescription,
+		SearchInContent,
+	} {
+		assert.True(t, searchIn.isValid())
+	}
+
+	searchIn := SearchIn("test")
+	assert.False(t, searchIn.isValid())
+}
+
+func Test_Language_isValid(t *testing.T) {
+	for _, language := range []Language{
+		LanguageArabic,
+		LanguageGerman,
+		LanguageEnglish,
+		LanguageSpanish,
+		LanguageFrench,
+		LanguageHebrew,
+		LanguageItalian,
+		LanguageDutch,
+		LanguageNorwegian,
+		LanguagePortugese,
+		LanguageRussian,
+		LanguageSami,
+		LanguageUrdu,
+		LanguageChinese,
+	} {
+		assert.True(t, language.isValid())
+	}
+
+	language := Language("test")
+	assert.False(t, language.isValid())
+}
+
+func Test_Category_isValid(t *testing.T) {
+	for _, category := range []Category{
+		CategoryBusiness,
+		CategoryEntertainment,
+		CategoryGeneral,
+		CategoryHealth,
+		CategoryScience,
+		CategorySports,
+		CategoryTechnology,
+	} {
+		assert.True(t, category.isValid())
+	}
+
+	category := Category("test")
+	assert.False(t, category.isValid())
+}
+
+func Test_Country_isValid(t *testing.T) {
+	for _, country := range []Country{
+		CountryUnitedArabEmirates,
+		CountryArgentina,
+		CountryAustria,
+		CountryAustralia,
+		CountryBelgium,
+		CountryBulgaria,
+		CountryBrazil,
+		CountryCanada,
+		CountrySwitzerland,
+		CountryChina,
+		CountryColombia,
+		CountryCuba,
+		CountryCzechia,
+		CountryGermany,
+		CountryEgypt,
+		CountryFrance,
+		CountryUnitedKingdom,
+		CountryGreece,
+		CountryHonkKong,
+		CountryHungary,
+		CountryIndonesia,
+		CountryIreland,
+		CountryIsrael,
+		CountryIndia,
+		CountryItaly,
+		CountryJapan,
+		CountryKorea,
+		CountryLithuania,
+		CountryLatvia,
+		CountryMorocco,
+		CountryMexico,
+		CountryMalaysia,
+		CountryNigeria,
+		CountryNetherlands,
+		CountryNorway,
+		CountryNewZealand,
+		CountryPhilippines,
+		CountryPoland,
+		CountryPortugal,
+		CountryRomania,
+		CountrySerbia,
+		CountryRussia,
+		CountrySaudiArabia,
+		CountrySweden,
+		CountrySingapore,
+		CountrySlovenia,
+		CountrySlovakia,
+		CountryThailand,
+		CountryTurkey,
+		CountryTaiwan,
+		CountryUkraine,
+		CountryUnitedStates,
+		CountryVenezuela,
+		CountrySouthAfrica,
+	} {
+		assert.True(t, country.isValid())
+	}
+
+	country := Country("test")
+	assert.False(t, country.isValid())
+}
+
+func Test_SourceParams_validate(t *testing.T) {
 	tests := map[string]struct {
 		Params SourceParams
 		Err    error
@@ -59,7 +190,7 @@ func Test_SourceParams_Validate(t *testing.T) {
 
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			assert.Equal(t, test.Err, test.Params.Validate())
+			assert.Equal(t, test.Err, test.Params.validate())
 		})
 	}
 }
@@ -86,7 +217,7 @@ func Test_SourceParams_rawQuery(t *testing.T) {
 	)
 }
 
-func Test_TopHeadlinesParams_Validate(t *testing.T) {
+func Test_TopHeadlinesParams_validate(t *testing.T) {
 	tests := map[string]struct {
 		Params TopHeadlinesParams
 		Err    error
@@ -148,7 +279,7 @@ func Test_TopHeadlinesParams_Validate(t *testing.T) {
 
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			assert.Equal(t, test.Err, test.Params.Validate())
+			assert.Equal(t, test.Err, test.Params.validate())
 		})
 	}
 }
@@ -180,7 +311,7 @@ func Test_TopHeadlinesParams_rawQuery(t *testing.T) {
 	)
 }
 
-func Test_EverythingParams_Validate(t *testing.T) {
+func Test_EverythingParams_validate(t *testing.T) {
 	tests := map[string]struct {
 		Params EverythingParams
 		Err    error
@@ -246,7 +377,7 @@ func Test_EverythingParams_Validate(t *testing.T) {
 
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			assert.Equal(t, test.Err, test.Params.Validate())
+			assert.Equal(t, test.Err, test.Params.validate())
 		})
 	}
 }
