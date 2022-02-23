@@ -163,7 +163,6 @@ func (c *Client) get(
 		http.NoBody,
 	)
 	if err != nil {
-		// unlikely to happen.
 		return 0, nil, err
 	}
 
@@ -171,7 +170,6 @@ func (c *Client) get(
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		// unlikely to happen.
 		return 0, nil, err
 	}
 

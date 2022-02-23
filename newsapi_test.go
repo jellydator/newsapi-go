@@ -1,14 +1,17 @@
 package newsapi
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"testing"
 	"time"
 
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_WithHTTPClient(t *testing.T) {
@@ -501,6 +504,99 @@ func Test_Client_Sources(t *testing.T) {
 			}
 
 			assert.Equal(t, test.Sources, sources)
+		})
+	}
+}
+
+func Test_Client_get(t *testing.T) {
+	tests := map[string]struct {
+		StatusCode int
+		Body       []byte
+		Params     params
+		Resp       httpmock.Responder
+		NilContext bool
+		Err        error
+	}{
+		"Validate returns an error": {
+			Params: &EverythingParams{},
+			Resp:   httpmock.NewBytesResponder(http.StatusBadRequest, []byte{1, 2, 3, 4}),
+			Err:    ErrParamsScopeTooBroad,
+		},
+		"Invalid context": {
+			Params:     &SourceParams{},
+			NilContext: true,
+			Err:        assert.AnError,
+		},
+		"Client do returns an error": {
+			Params: &SourceParams{},
+			Resp: func(req *http.Request) (*http.Response, error) {
+				assert.Equal(t, "777", req.Header.Get("X-Api-Key"))
+				return nil, assert.AnError
+			},
+			Err: assert.AnError,
+		},
+		"Successful request": {
+			StatusCode: http.StatusBadRequest,
+			Body:       []byte{1, 2, 3, 4},
+			Params:     &SourceParams{},
+			Resp: func(req *http.Request) (*http.Response, error) {
+				assert.Equal(t, "777", req.Header.Get("X-Api-Key"))
+				return httpmock.NewBytesResponse(
+					http.StatusBadRequest,
+					[]byte{1, 2, 3, 4},
+				), nil
+			},
+		},
+	}
+
+	for name, test := range tests {
+		test := test
+
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			transport := httpmock.NewMockTransport()
+			client := &Client{
+				client: &http.Client{
+					Transport: transport,
+				},
+				url:    "test/",
+				apiKey: "777",
+			}
+
+			transport.RegisterResponder(http.MethodGet, "test/123", test.Resp)
+
+			var ctx context.Context
+			if !test.NilContext {
+				ctx = context.Background()
+			}
+
+			statusCode, body, err := client.get(
+				ctx,
+				"123",
+				test.Params,
+			)
+
+			if body != nil {
+				defer body.Close()
+			}
+
+			if errors.Is(test.Err, assert.AnError) {
+				assert.Error(t, err)
+			} else {
+				assert.Equal(t, test.Err, err)
+			}
+
+			if err != nil {
+				return
+			}
+
+			buf := &bytes.Buffer{}
+			_, err = io.Copy(buf, body)
+			require.NoError(t, err)
+
+			assert.Equal(t, test.StatusCode, statusCode)
+			assert.Equal(t, test.Body, buf.Bytes())
 		})
 	}
 }
