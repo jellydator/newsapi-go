@@ -350,7 +350,7 @@ func (sr *SourceParams) validate() error {
 	return nil
 }
 
-// rawQuery constructsa a raw query from parameters.
+// rawQuery constructs a raw query from parameters.
 func (sr *SourceParams) rawQuery() string {
 	q := make(url.Values)
 
@@ -492,7 +492,7 @@ type EverythingParams struct {
 	// * Words or phrases that must not appear in an article should be
 	//   prefixed with a minus (-) sign. e.g -bitcoin.
 	// * "AND", "OR" and "NOT" keywords can be used to group several
-	//   queries. Paranthesis can be used to create subgroups. e.g:
+	//   queries. Parenthesis can be used to create subgroups. e.g:
 	//   crypto AND (ethereum OR litecoin) NOT bitcoin.
 	// Query has a maximum length of 500 characters.
 	Query string

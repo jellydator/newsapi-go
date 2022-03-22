@@ -55,7 +55,7 @@ func NewClient(apiKey string, opts ...ClientOption) *Client {
 // Everything retrieves articles by the provided parameters.
 // The uint return value indicates the number of available articles. The
 // length of the returned slice may be less than this value; additional calls
-// need to be make to retrieve other available articles.
+// need to be made to retrieve other available articles.
 // Endpoint documentation can be found here:
 // https://newsapi.org/docs/endpoints/everything
 func (c *Client) Everything(ctx context.Context, pr EverythingParams) ([]Article, uint, error) {
@@ -65,7 +65,7 @@ func (c *Client) Everything(ctx context.Context, pr EverythingParams) ([]Article
 // TopHeadlines retrieves top headlines articles by the provided parameters.
 // The uint return value indicates the number of available articles. The
 // length of the returned slice may be less than this value; additional calls
-// need to be make to retrieve other available articles.
+// need to be made to retrieve other available articles.
 // Endpoint documentation can be found here:
 // https://newsapi.org/docs/endpoints/top-headlines
 func (c *Client) TopHeadlines(ctx context.Context, pr TopHeadlinesParams) ([]Article, uint, error) {

@@ -90,7 +90,7 @@ func Test_Client_Everything(t *testing.T) {
 				Message:  "bad thing",
 			},
 		},
-		"Succesfully fetched articles": {
+		"Successfully fetched articles": {
 			Param: EverythingParams{
 				Query: "321",
 			},
@@ -250,7 +250,7 @@ func Test_Client_TopHeadlines(t *testing.T) {
 				Message:  "bad thing",
 			},
 		},
-		"Succesfully fetched articles": {
+		"Successfully fetched articles": {
 			Param: TopHeadlinesParams{
 				Query: "321",
 			},
@@ -413,7 +413,7 @@ func Test_Client_Sources(t *testing.T) {
 				Message:  "bad thing",
 			},
 		},
-		"Succesfully fetched sources": {
+		"Successfully fetched sources": {
 			Param: SourceParams{
 				Languages: []Language{
 					LanguageChinese,
