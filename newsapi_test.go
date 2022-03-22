@@ -31,7 +31,7 @@ func Test_WithURL(t *testing.T) {
 
 func Test_New(t *testing.T) {
 	client := &http.Client{}
-	c := New("321", WithBaseURL("123"), WithHTTPClient(client))
+	c := NewClient("321", WithBaseURL("123"), WithHTTPClient(client))
 
 	assert.Equal(t, "321", c.apiKey)
 	assert.Equal(t, "123", c.baseURL)

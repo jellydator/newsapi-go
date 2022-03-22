@@ -35,8 +35,8 @@ func WithBaseURL(url string) ClientOption {
 	}
 }
 
-// New creates a fresh instance of newsapi client.
-func New(apiKey string, opts ...ClientOption) *Client {
+// NewClient creates a fresh instance of newsapi client.
+func NewClient(apiKey string, opts ...ClientOption) *Client {
 	c := &Client{
 		apiKey: apiKey,
 		client: &http.Client{
