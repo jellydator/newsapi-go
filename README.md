@@ -1,6 +1,6 @@
 # newsapi
 [![GoDoc](https://godoc.org/github.com/jellydator/newsapi-go?status.png)](https://godoc.org/github.com/jellydator/newsapi-go)
-[![Test coverage](http://gocover.io/_badge/github.com/jellydator/newsapi-go)](https://gocover.io/github.com/jellydator/newsapi-go)
+[![Coverage Status](https://coveralls.io/repos/github/jellydator/newsapi-go/badge.svg?branch=master)](https://coveralls.io/github/jellydator/newsapi-go?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/jellydator/newsapi-go)](https://goreportcard.com/report/github.com/jellydator/newsapi-go)
 
 Go client implementation for the NewsAPI.
