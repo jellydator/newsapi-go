@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/jarcoal/httpmock v1.2.0
-	github.com/stretchr/testify v1.7.5
+	github.com/stretchr/testify v1.8.0
 )
 
 require (
